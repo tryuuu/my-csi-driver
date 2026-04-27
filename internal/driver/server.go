@@ -27,9 +27,15 @@ func Run(socketPath string) error {
 		return err
 	}
 
+	nodeServer, err := NewNodeServer(kubeClient)
+	if err != nil {
+		return fmt.Errorf("node server: %w", err)
+	}
+
 	srv := grpc.NewServer()
 	csi.RegisterIdentityServer(srv, &IdentityServer{})
 	csi.RegisterControllerServer(srv, &ControllerServer{kubeClient: kubeClient})
+	csi.RegisterNodeServer(srv, nodeServer)
 
 	return srv.Serve(lis)
 }
