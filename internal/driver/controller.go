@@ -24,7 +24,7 @@ const (
 	deleteJobTimeout = 2 * time.Minute
 )
 
-var errNodeNotFound   = errors.New("node not found")
+var errNodeNotFound = errors.New("node not found")
 var errNoNodeAffinity = errors.New("no nodeAffinity on PV")
 
 type ControllerServer struct {
@@ -38,7 +38,7 @@ func (s *ControllerServer) CreateVolume(_ context.Context, req *csi.CreateVolume
 	}
 
 	// Preferred → Requisite の順でトポロジーを選ぶ。
-	// external-provisioner が WaitForFirstConsumer で決定したノードに PV を固定する。
+	// external-provisioner が WaitForFirstConsumer で決定したノードに PV を固定
 	var topology []*csi.Topology
 	if topo := req.GetAccessibilityRequirements(); topo != nil {
 		if len(topo.GetPreferred()) > 0 {
@@ -78,8 +78,7 @@ func (s *ControllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVolu
 	return &csi.DeleteVolumeResponse{}, nil
 }
 
-// nodeFromPV は PV の nodeAffinity から対象ノード名を取得する。
-// Controller Plugin は hostPath に直接アクセスできないため、ノードの特定にのみ使用する。
+// PV の nodeAffinity から対象ノード名を取得
 func (s *ControllerServer) nodeFromPV(ctx context.Context, volumeID string) (string, error) {
 	pvList, err := s.kubeClient.CoreV1().PersistentVolumes().List(ctx, metav1.ListOptions{})
 	if err != nil {
@@ -108,8 +107,7 @@ func (s *ControllerServer) nodeFromPV(ctx context.Context, volumeID string) (str
 	return "", errNodeNotFound
 }
 
-// runDeleteJob は対象ノードで `rm -rf <volumeBasePath>/<volumeID>` を実行する Job を作成し、完了を待つ。
-// Controller Plugin は Deployment として動くためノードの hostPath に直接触れず、Job 経由でノード上の削除を行う。
+// は対象ノードで `rm -rf <volumeBasePath>/<volumeID>` を実行する Job を作成し、完了を待つ。
 func (s *ControllerServer) runDeleteJob(ctx context.Context, volumeID, nodeName string) error {
 	jobName := deleteJobName(volumeID)
 
@@ -175,8 +173,7 @@ func (s *ControllerServer) runDeleteJob(ctx context.Context, volumeID, nodeName 
 	return fmt.Errorf("delete job timed out after %v", deleteJobTimeout)
 }
 
-// deleteJobName は volumeID から 63 文字以内の一意な Job 名を生成する。
-// 単純切り詰めは先頭が同じ volumeID で衝突するため、SHA-256 ハッシュを使う。
+// volumeID から 63 文字以内の一意な Job 名を生成
 func deleteJobName(volumeID string) string {
 	const prefix = "csi-del-"
 	name := prefix + volumeID
