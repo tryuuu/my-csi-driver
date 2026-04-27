@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csi-driver-controller
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csi-driver-controller
+  template:
+    metadata:
+      labels:
+        app: csi-driver-controller
+    spec:
+      serviceAccountName: csi-driver
+      containers:
+        - name: csi-driver
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: external-provisioner
+          image: {{ .Values.sidecars.externalProvisioner.image }}
+          args:
+            - --csi-address=/csi/csi.sock
+            - --leader-election
+            - --feature-gates=Topology=true
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+      volumes:
+        - name: socket-dir
+          emptyDir: {}

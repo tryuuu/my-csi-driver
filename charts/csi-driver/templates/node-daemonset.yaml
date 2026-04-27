@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: csi-driver-node
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: csi-driver-node
+  template:
+    metadata:
+      labels:
+        app: csi-driver-node
+    spec:
+      serviceAccountName: csi-driver
+      containers:
+        - name: csi-driver
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            privileged: true
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: kubelet-dir
+              mountPath: {{ .Values.kubeletDir }}
+              mountPropagation: Bidirectional
+            - name: data-dir
+              mountPath: /var/lib/csi-driver
+        - name: node-driver-registrar
+          image: {{ .Values.sidecars.nodeDriverRegistrar.image }}
+          args:
+            - --csi-address=/csi/csi.sock
+            - --kubelet-registration-path={{ .Values.kubeletDir }}/plugins/csi.tryu.dev/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
+      volumes:
+        - name: socket-dir
+          hostPath:
+            path: {{ .Values.kubeletDir }}/plugins/csi.tryu.dev
+            type: DirectoryOrCreate
+        - name: registration-dir
+          hostPath:
+            path: {{ .Values.kubeletDir }}/plugins_registry
+            type: Directory
+        - name: kubelet-dir
+          hostPath:
+            path: {{ .Values.kubeletDir }}
+            type: Directory
+        - name: data-dir
+          hostPath:
+            path: /var/lib/csi-driver
+            type: DirectoryOrCreate

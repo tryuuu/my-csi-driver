@@ -1,0 +1,38 @@
+name: Release Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - charts/**
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Package chart
+        run: |
+          mkdir -p docs/
+          helm package charts/csi-driver -d docs/
+
+      - name: Update Helm repo index
+        run: helm repo index docs/ --url https://tryuuu.github.io/my-csi-driver
+
+      - name: Commit and push docs/
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --cached --quiet || git commit -m "chore: release helm chart $(helm show chart charts/csi-driver | grep '^version:' | awk '{print $2}')"
+          git push
