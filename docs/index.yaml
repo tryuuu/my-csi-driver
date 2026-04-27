@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  csi-driver:
+  - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2026-04-27T13:27:07.084889511Z"
+    description: Local-path CSI driver for csi.tryu.dev
+    digest: 50d7be6b1f5dc04e836cd3d1e593fc97598d1bf0999bb56e087a6bad2353cfa5
+    name: csi-driver
+    type: application
+    urls:
+    - https://tryuuu.github.io/my-csi-driver/csi-driver-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-04-27T13:27:07.084294169Z"
