@@ -54,7 +54,7 @@ func (s *NodeServer) NodePublishVolume(_ context.Context, req *csi.NodePublishVo
 	}
 
 	dataDir := volumeBasePath + "/" + req.GetVolumeId()
-	if err := os.MkdirAll(dataDir, 0750); err != nil {
+	if err := os.MkdirAll(dataDir, 0777); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create data dir: %v", err)
 	}
 
