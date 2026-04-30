@@ -57,6 +57,10 @@ func (s *NodeServer) NodePublishVolume(_ context.Context, req *csi.NodePublishVo
 	if err := os.MkdirAll(dataDir, 0777); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create data dir: %v", err)
 	}
+	// MkdirAll respects the process umask, so explicitly set permissions.
+	if err := os.Chmod(dataDir, 0777); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to chmod data dir: %v", err)
+	}
 
 	targetPath := req.GetTargetPath()
 	if err := os.MkdirAll(targetPath, 0750); err != nil {
