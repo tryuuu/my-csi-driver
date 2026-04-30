@@ -8,4 +8,3 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /csi-driver ./cmd/driver
 FROM debian:bookworm-slim
 COPY --from=builder /csi-driver /csi-driver
 ENTRYPOINT ["/csi-driver"] 
-# a
