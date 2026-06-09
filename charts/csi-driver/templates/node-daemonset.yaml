@@ -32,6 +32,8 @@ spec:
               mountPropagation: Bidirectional
             - name: data-dir
               mountPath: /var/lib/csi-driver
+            - name: dev-dir
+              mountPath: /dev
         - name: node-driver-registrar
           image: {{ .Values.sidecars.nodeDriverRegistrar.image }}
           args:
@@ -59,3 +61,7 @@ spec:
           hostPath:
             path: /var/lib/csi-driver
             type: DirectoryOrCreate
+        - name: dev-dir
+          hostPath:
+            path: /dev
+            type: Directory
