@@ -150,6 +150,10 @@ func (s *NodeServer) NodeStageVolume(_ context.Context, req *csi.NodeStageVolume
 		return nil, status.Errorf(codes.Internal, "failed to mount loop device: %v", err)
 	}
 
+	if err := os.Chmod(stagingPath, 0777); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to chmod staging path: %v", err)
+	}
+
 	return &csi.NodeStageVolumeResponse{}, nil
 }
 
