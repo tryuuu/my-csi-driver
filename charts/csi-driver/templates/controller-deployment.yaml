@@ -23,6 +23,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: CSI_IMAGE
+              value: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
@@ -32,6 +34,14 @@ spec:
             - --csi-address=/csi/csi.sock
             - --leader-election
             - --feature-gates=Topology=true
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: external-resizer
+          image: {{ .Values.sidecars.externalResizer.image }}
+          args:
+            - --csi-address=/csi/csi.sock
+            - --leader-election
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
