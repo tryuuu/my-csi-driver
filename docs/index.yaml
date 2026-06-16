@@ -3,7 +3,17 @@ entries:
   csi-driver:
   - apiVersion: v2
     appVersion: v0.1.0
-    created: "2026-06-16T05:01:06.719632879Z"
+    created: "2026-06-16T07:19:05.299268192Z"
+    description: Local-path CSI driver for csi.tryu.dev
+    digest: ded025d6df33fd27a43e52b14813b624ae5bafb220b7e9dd06659408bba345a9
+    name: csi-driver
+    type: application
+    urls:
+    - https://tryuuu.github.io/my-csi-driver/csi-driver-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2026-06-16T07:19:05.299026146Z"
     description: Local-path CSI driver for csi.tryu.dev
     digest: 4ce1e95940d8ea8b8cbdb9d156f68494f599a5e8c656f7c6ec099e261f17d25f
     name: csi-driver
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://tryuuu.github.io/my-csi-driver/csi-driver-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-16T05:01:06.719264121Z"
+generated: "2026-06-16T07:19:05.298665486Z"
