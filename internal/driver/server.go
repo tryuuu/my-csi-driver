@@ -34,7 +34,10 @@ func Run(socketPath string) error {
 
 	srv := grpc.NewServer()
 	csi.RegisterIdentityServer(srv, &IdentityServer{})
-	csi.RegisterControllerServer(srv, &ControllerServer{kubeClient: kubeClient})
+	csi.RegisterControllerServer(srv, &ControllerServer{
+		kubeClient: kubeClient,
+		jobImage:   os.Getenv("CSI_IMAGE"),
+	})
 	csi.RegisterNodeServer(srv, nodeServer)
 
 	return srv.Serve(lis)
